@@ -1,0 +1,63 @@
+name: Generate Stats Images
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "5 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  # Branch to push the generated images to
+  OUTPUT_BRANCH: generated
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      # Generate all statistics images
+      - name: Generate images
+        run: cargo run --release
+        env:
+          # PAT to access the GitHub API, with permissions including 'repo', 'read:org', and 'read:user'
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          # Repositories to exclude, comma-separated, 'owner/repo' format
+          EXCLUDE_REPOS: ${{ secrets.EXCLUDE_REPOS }}
+          # Languages to exclude, comma-separated, case-insensitive, e.g., "Jupyter Notebook,html"
+          EXCLUDE_LANGS: ${{ secrets.EXCLUDE_LANGS }}
+          # Whether to exclude forked repositories
+          EXCLUDE_FORKS: true
+          # Whether to exclude private repositories
+          EXCLUDE_PRIVATE: false
+          # Whether to exclude archived repositories
+          EXCLUDE_ARCHIVE: false
+          # Log level (0-5). 0 - Off, 1 - Error, 2 - Warn, 3 - Info, 4 - Debug, 5 - Trace
+          LOG_LEVEL: 2
+          # Delay between API requests in milliseconds
+          DELAY_MS: 1000
+
+      # Set up uv for Python tools
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+
+      # Commit all changed files to the repository
+      - name: Commit to the repo
+        run: |
+          git config --global user.name "github-stats-rs[bot]"
+          git config --global user.email "github-stats-rs[bot]@teddyhuang-00.github.io"
+          # Force delete the output branch if it exists
+          git branch -D $OUTPUT_BRANCH || true
+          # Create a new orphan branch from the output directory
+          uvx ghp-import -o -m "Generate images on $(shell date +"%Y-%m-%d %H:%M:%S")" -b $OUTPUT_BRANCH generated
+          # Push the output branch to the remote repository
+          git push -f origin $OUTPUT_BRANCH

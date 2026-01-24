@@ -1,0 +1,29 @@
+[package]
+name = "github-stats-rs"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.100"
+log = "0.4.29"
+octocrab = "0.49.5"
+serde = { version = "1.0.228", features = ["derive"] }
+simple_logger = "5.1.0"
+tokio = { version = "1.49.0", features = ["macros", "rt-multi-thread"] }
+tokio-stream = "0.1.18"
+
+[lints.clippy]
+# Comprehensive lints for larger projects
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+cargo = { level = "allow", priority = -1 }
+
+# Security-focused lints
+unwrap_used = "deny"
+expect_used = "deny"
+
+# Allow some pedantic lints that are too strict for larger projects
+module_name_repetitions = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
