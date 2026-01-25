@@ -49,6 +49,9 @@ jobs:
       # Set up uv for Python tools
       - name: Set up uv
         uses: astral-sh/setup-uv@v7
+        with:
+          # No need to cache uv environments as we are only using it for ghp-import
+          enable-cache: false
 
       # Commit all changed files to the repository
       - name: Commit to the repo
@@ -58,6 +61,6 @@ jobs:
           # Force delete the output branch if it exists
           git branch -D $OUTPUT_BRANCH || true
           # Create a new orphan branch from the output directory
-          uvx ghp-import -o -m "Generate images on $(shell date +"%Y-%m-%d %H:%M:%S")" -b $OUTPUT_BRANCH generated
+          uvx ghp-import -o -m "Generate images on $(date +"%Y-%m-%d %H:%M:%S")" -b $OUTPUT_BRANCH generated
           # Push the output branch to the remote repository
           git push -f origin $OUTPUT_BRANCH
