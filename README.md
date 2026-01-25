@@ -84,6 +84,19 @@ Although very unlikely, there also might be cases where the code inadvertently r
 
 Inaccurate statistics may occur due to limitations in the GitHub API or changes in repository data between requests. While efforts have been made to minimize these issues, they cannot be completely eliminated. I recommend reviewing the actions logs periodically to check for warnings or errors that indicate potential inaccuracies. For example, if you see warnings about unable to get certain repository information, it may affect the accuracy of the statistics.
 
+## Development
+
+To run the project locally with configuration like the GitHub Personal Access Token, you can store them in a `.env` file at the root of the project. See the [`.env.sample`](.env.sample) file for reference.
+
+You can use the `justfile` provided in the repository to run the project with these configurations. Make sure you have [Just](https://just.systems/) installed. Then, you can use the following commands:
+
+```bash
+# Fix format and linting issues
+just fix
+# Run the project
+just run
+```
+
 ## Contributing
 
 Contributions are welcome! If you find any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request.
