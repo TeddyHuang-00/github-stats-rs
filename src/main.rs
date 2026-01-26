@@ -5,23 +5,11 @@ mod image;
 mod stat;
 
 use anyhow::Result;
-use log::{LevelFilter, debug};
-use simple_logger::SimpleLogger;
+use log::debug;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let config = config::Config::default();
-    SimpleLogger::new()
-        .with_level(match config.log_level {
-            0 => LevelFilter::Off,
-            1 => LevelFilter::Error,
-            2 => LevelFilter::Warn,
-            3 => LevelFilter::Info,
-            4 => LevelFilter::Debug,
-            _ => LevelFilter::Trace,
-        })
-        .with_module_level("octocrab", LevelFilter::Warn)
-        .init()?;
     debug!("{config:?}");
 
     let statistics = stat::Statistics::fetch(&config).await?;

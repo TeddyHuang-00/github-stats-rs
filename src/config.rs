@@ -1,5 +1,8 @@
 use std::{collections::HashSet, env};
 
+use log::LevelFilter;
+use simple_logger::SimpleLogger;
+
 #[derive(Clone, Debug)]
 pub struct Config {
     /// GitHub Personal Access Token
@@ -28,6 +31,7 @@ pub struct Config {
     /// - 3 - Info
     /// - 4 - Debug
     /// - 5 - Trace
+    #[allow(dead_code)]
     pub log_level: u8,
     /// Delay between requests in milliseconds
     ///
@@ -37,6 +41,24 @@ pub struct Config {
 
 impl Default for Config {
     fn default() -> Self {
+        // Initialize logger early in the process
+        let log_level = env::var("LOG_LEVEL")
+            .unwrap_or_else(|_| "2".to_string())
+            .parse::<u8>()
+            .unwrap_or(2);
+        SimpleLogger::new()
+            .with_level(match log_level {
+                0 => LevelFilter::Off,
+                1 => LevelFilter::Error,
+                2 => LevelFilter::Warn,
+                3 => LevelFilter::Info,
+                4 => LevelFilter::Debug,
+                _ => LevelFilter::Trace,
+            })
+            .with_module_level("octocrab", LevelFilter::Warn)
+            .init()
+            .unwrap_or_else(|e| panic!("Error encountered when initializing logger: {e}"));
+
         let access_token = env::var("ACCESS_TOKEN").unwrap_or_else(|_| "Not set".to_string());
         let exclude_repos = env::var("EXCLUDE_REPOS")
             .unwrap_or_else(|_| String::new())
@@ -62,10 +84,6 @@ impl Default for Config {
             .unwrap_or_else(|_| "false".to_string())
             .to_lowercase()
             == "true";
-        let log_level = env::var("LOG_LEVEL")
-            .unwrap_or_else(|_| "2".to_string())
-            .parse::<u8>()
-            .unwrap_or(2);
         let delay_ms = env::var("DELAY_MS")
             .unwrap_or_else(|_| "1000".to_string())
             .parse::<u64>()
@@ -77,7 +95,7 @@ impl Default for Config {
             exclude_forks,
             exclude_private,
             exclude_archive,
-            log_level,
+            log_level, // Only used for debugging purposes
             delay_ms,
         }
     }
