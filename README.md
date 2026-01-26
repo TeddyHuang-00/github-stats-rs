@@ -35,7 +35,7 @@ This project is a modified and enhanced version of [github-stats](https://github
       - To trigger manually, go to your repository's **Actions** tab, select the **"Generate Stats Images"** workflow, and click the **"Run workflow"** button.
    2. After the workflow completes, the generated images will be available in the `generated` branch of your repository.
 6. **Embed the Images**
-   Add the following Markdown code to your profile README:
+   Add the following Markdown code to your [profile README](https://docs.github.com/en/account-and-profile/how-tos/profile-customization/managing-your-profile-readme):
 
    ```markdown
    ![GitHub Overview for Username (Dark Mode)](https://raw.githubusercontent.com/Username/Repository/generated/overview.svg#gh-dark-mode-only)

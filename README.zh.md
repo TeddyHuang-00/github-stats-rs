@@ -35,7 +35,7 @@
       - 要手动触发，请前往仓库的 **Actions** 标签页，选择 **"Generate Stats Images"** 工作流，然后点击 **"Run workflow"** 按钮。
    2. 工作流完成后，生成的图片将出现在你仓库的 `generated` 分支中。
 6. **嵌入图表**
-   将以下 Markdown 代码添加到你的个人主页 README 中：
+   将以下 Markdown 代码添加到[你的个人主页 README](https://docs.github.com/zh/account-and-profile/how-tos/profile-customization/managing-your-profile-readme) 中：
 
    ```markdown
    ![用户名 的 GitHub 概览 (深色模式)](https://raw.githubusercontent.com/用户名/仓库名/generated/overview.svg#gh-dark-mode-only)

@@ -35,7 +35,7 @@
       - 手動で実行するには、リポジトリの **Actions** タブに移動し、**"Generate Stats Images"** ワークフローを選択し、**"Run workflow"** ボタンをクリックします。
    2. ワークフローが完了すると、生成された画像はリポジトリの`generated`ブランチで利用可能になります。
 6. **画像の埋め込み**
-   プロフィール README に以下の Markdown コードを追加します：
+   [プロフィール README](https://docs.github.com/ja/account-and-profile/how-tos/profile-customization/managing-your-profile-readme) に以下の Markdown コードを追加します：
 
    ```markdown
    ![Username の GitHub 概覧（ダークモード）](https://raw.githubusercontent.com/Username/Repository/generated/overview.svg#gh-dark-mode-only)
