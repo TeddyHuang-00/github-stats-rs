@@ -6,7 +6,7 @@ use octocrab::models;
 use serde::{Deserialize, Serialize};
 use tokio_stream::StreamExt;
 
-use crate::env::Config;
+use crate::config::Config;
 
 #[derive(Debug, Deserialize, Serialize)]
 struct Traffic {

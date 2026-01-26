@@ -1,5 +1,5 @@
 mod color;
-mod env;
+mod config;
 mod icons;
 mod image;
 mod stat;
@@ -10,7 +10,7 @@ use simple_logger::SimpleLogger;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let config = env::Config::default();
+    let config = config::Config::default();
     SimpleLogger::new()
         .with_level(match config.log_level {
             0 => LevelFilter::Off,

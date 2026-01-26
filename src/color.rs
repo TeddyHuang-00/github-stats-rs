@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 
-use crate::env::Config;
+use crate::config::Config;
 
 pub struct Color(pub HashMap<String, String>);
 
