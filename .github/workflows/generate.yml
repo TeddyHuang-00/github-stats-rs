@@ -43,6 +43,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
+      # Build the binary
+      - name: Build project
+        run: cargo build --release
+
       # Generate all statistics images
       - name: Generate images
         run: cargo run --release
