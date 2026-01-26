@@ -49,11 +49,11 @@ jobs:
 
       # Build the binary
       - name: Build project
-        run: cargo build --release
+        run: cargo build --locked --release
 
       # Generate all statistics images
       - name: Generate images
-        run: cargo run --release
+        run: cargo run --locked --release
         env:
           # PAT to access the GitHub API, with permissions including 'repo', 'read:org', and 'read:user'
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
