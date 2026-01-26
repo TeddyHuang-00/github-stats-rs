@@ -82,6 +82,8 @@ This project is a Rust-based refactor of the original [github-stats](https://git
 - **Dependencies Kept Up-to-Date**: All dependencies are always up-to-date by using [Renovate](https://github.com/renovatebot/renovate), ensuring API compatibility and access to the latest fixes and features.
 - **Improved Code Quality and Maintainability**: The codebase has been rewritten in Rust with a focus on readability, maintainability, and performance. Using `octocrab` and the REST API results in cleaner and simpler code compared to the original GraphQL implementation.
 - **Cleaner Repository Structure**: The workflow outputs generated images to a separate branch (`generated` by default), keeping the main branch focused on source code with a cleaner history. This makes it easy to sync updates from this template without conflicts from generated files.
+- **Template Engine**: This project uses `maud` and `turf` for SVG template rendering and CSS processing, respectively. This provides a more robust and easy-to-tweak system compared to using strings substitution.
+- **Minified SVG Outputs**: The SVGs are generated in a minified format, reducing file size by approximately 7% to 10%, which is not massive but still beneficial for faster loading times.
 
 ## Notes
 
