@@ -3,14 +3,22 @@ name = "github-stats-rs"
 version = "0.1.0"
 edition = "2024"
 
+[package.metadata.turf.class_names]
+template = "<original_name>"
+
+[package.metadata.turf-dev.class_names]
+template = "<original_name>"
+
 [dependencies]
 anyhow = "1.0.100"
 log = "0.4.29"
+maud = "0.27.0"
 octocrab = "0.49.5"
 serde = { version = "1.0.228", features = ["derive"] }
 simple_logger = "5.1.0"
 tokio = { version = "1.49.0", features = ["macros", "rt-multi-thread"] }
 tokio-stream = "0.1.18"
+turf = "0.10.1"
 
 [lints.clippy]
 # Comprehensive lints for larger projects

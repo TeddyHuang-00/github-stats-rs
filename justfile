@@ -4,6 +4,7 @@ format:
     cargo +nightly fmt --all
     cargo sort --workspace
     cargo sort-derives
+    maudfmt src/
     just --fmt --unstable
 
 check: format
