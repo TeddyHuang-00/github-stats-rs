@@ -3,10 +3,16 @@ use std::{collections::HashSet, env};
 use log::LevelFilter;
 use simple_logger::SimpleLogger;
 
+use crate::i18n::SupportedLanguage;
+
 #[derive(Clone, Debug)]
 pub struct Config {
     /// GitHub Personal Access Token
     pub access_token: String,
+    /// Locale for internationalization
+    ///
+    /// See `SupportedLanguage` for supported languages and codes.
+    pub locale: SupportedLanguage,
     /// Repositories to exclude (case sensitive)
     ///
     /// Should be in the format "owner/repo"
@@ -60,6 +66,9 @@ impl Default for Config {
             .unwrap_or_else(|e| panic!("Error encountered when initializing logger: {e}"));
 
         let access_token = env::var("ACCESS_TOKEN").unwrap_or_else(|_| "Not set".to_string());
+        let locale = env::var("LOCALE")
+            .unwrap_or_else(|_| "en".to_string())
+            .into();
         let exclude_repos = env::var("EXCLUDE_REPOS")
             .unwrap_or_else(|_| String::new())
             .split(',')
@@ -88,8 +97,10 @@ impl Default for Config {
             .unwrap_or_else(|_| "1000".to_string())
             .parse::<u64>()
             .unwrap_or(1000);
+
         Self {
             access_token,
+            locale,
             exclude_repos,
             exclude_langs,
             exclude_forks,

@@ -67,6 +67,8 @@ jobs:
           EXCLUDE_PRIVATE: false
           # Whether to exclude archived repositories
           EXCLUDE_ARCHIVE: false
+          # Locale for generated images, e.g., "english", "zh-cn"
+          LOCALE: "en"
           # Log level (0-5). 0 - Off, 1 - Error, 2 - Warn, 3 - Info, 4 - Debug, 5 - Trace
           LOG_LEVEL: 2
           # Delay between API requests in milliseconds

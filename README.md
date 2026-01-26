@@ -66,9 +66,32 @@ Optional configurations can be set by adding repository secrets or editing the w
 | `EXCLUDE_FORKS`   | Workflow File     | If `true`, forked repositories will be excluded from statistics.                                                                    | `false`       |
 | `EXCLUDE_PRIVATE` | Workflow File     | If `true`, private repositories will be excluded from statistics.                                                                   | `false`       |
 | `EXCLUDE_ARCHIVE` | Workflow File     | If `true`, archived repositories will be excluded from statistics.                                                                  | `false`       |
+| `LOCALE`          | Workflow File     | Locale for generated images. See [Supported Languages](#supported-languages) for available options.                                 | `en`          |
 | `LOG_LEVEL`       | Workflow File     | Log level: `0` (off), `1` (error), `2` (warn), `3` (info), `4` (debug), `5` (trace).                                                | `2`           |
 | `DELAY_MS`        | Workflow File     | Delay between API requests in milliseconds to avoid hitting rate limits.                                                            | `1000`        |
 | `OUTPUT_BRANCH`   | Workflow File     | The branch name where generated images are stored.                                                                                  | `generated`   |
+
+## Supported Languages
+
+Many strings in the generated images can be localized. You can customize the language used by setting the `LOCALE` configuration. All language codes are case-insensitive, while underscores (`_`) and whitespace (` `) are treated as hyphens (`-`).
+
+| Language Code                       | Language Name        | Status             |
+| ----------------------------------- | -------------------- | ------------------ |
+| `english`, `en`                     | English              | :heavy_check_mark: |
+| `chinese`, `zh`, `zh-cn`, `zh-hans` | Chinese (Simplified) | :heavy_check_mark: |
+| `japanese`, `ja`                    | Japanese             | :heavy_check_mark: |
+| `french`, `fr`                      | French               | :x:                |
+| `german`, `de`                      | German               | :x:                |
+| `italian`, `it`                     | Italian              | :x:                |
+| `korean`, `ko`                      | Korean               | :x:                |
+| `portuguese`, `pt`, `pt-br`         | Portuguese           | :x:                |
+| `russian`, `ru`                     | Russian              | :x:                |
+| `spanish`, `es`                     | Spanish              | :x:                |
+
+> - :heavy_check_mark: - Proofread and verified by human translators
+> - :x: - Machine-translated, may contain errors
+>
+> If you'd like to contribute translations for unsupported languages or improve existing ones, please see [this file](src/i18n.rs) and consider submitting a pull request!
 
 ## Differences from the Original Project
 

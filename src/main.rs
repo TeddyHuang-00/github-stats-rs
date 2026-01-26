@@ -1,5 +1,6 @@
 mod color;
 mod config;
+mod i18n;
 mod icons;
 mod image;
 mod stat;
@@ -15,10 +16,10 @@ async fn main() -> Result<()> {
     let statistics = stat::Statistics::fetch(&config).await?;
     let color = color::Color::fetch(&config).await?;
 
-    let lang_image = image::LanguageImage::new(&color, &statistics);
+    let lang_image = image::LanguageImage::new(config.locale, &color, &statistics);
     lang_image.save()?;
 
-    let overview_image = image::OverviewImage::new(&statistics);
+    let overview_image = image::OverviewImage::new(config.locale, &statistics);
     overview_image.save()?;
 
     Ok(())

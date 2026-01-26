@@ -3,7 +3,12 @@ use std::fs;
 use anyhow::Result;
 use maud::{Markup, html};
 
-use crate::{color::Color, icons, stat::Statistics};
+use crate::{
+    color::Color,
+    i18n::{Internationalization, SupportedLanguage},
+    icons,
+    stat::Statistics,
+};
 
 const WORKSPACE_ROOT: &str = env!("CARGO_MANIFEST_DIR");
 const OUTPUT_DIR: &str = "generated";
@@ -14,7 +19,7 @@ impl LanguageImage {
     const FILENAME: &str = "languages.svg";
     const ANIMATION_DELAY_MS: u64 = 100;
 
-    pub fn new(color: &Color, stats: &Statistics) -> Self {
+    pub fn new(locale: SupportedLanguage, color: &Color, stats: &Statistics) -> Self {
         let (style_sheet, class_name) = turf::style_sheet_values!("styles/languages.scss");
 
         let progress = html! {
@@ -52,7 +57,7 @@ impl LanguageImage {
                     g {
                         foreignObject x="21" y="17" width="318" height="176" {
                             .(class_name.ellipsis) xmlns="http://www.w3.org/1999/xhtml" {
-                                h2 { "Languages Used (By File Size)" }
+                                h2 { (locale.language_title()) }
                                 {
                                     span.(class_name.progress) { (progress) }
                                 }
@@ -82,18 +87,18 @@ impl OverviewImage {
     const FILENAME: &str = "overview.svg";
     const ANIMATION_DELAY_MS: u64 = 100;
 
-    pub fn new(stats: &Statistics) -> Self {
+    pub fn new(locale: SupportedLanguage, stats: &Statistics) -> Self {
         let entries = [
-            ("Stars", icons::STAR, stats.stars),
-            ("Forks", icons::REPO_FORKED, stats.forks),
-            ("Followers", icons::PERSON, stats.followers),
+            (locale.stars(), icons::STAR, stats.stars),
+            (locale.forks(), icons::REPO_FORKED, stats.forks),
+            (locale.followers(), icons::PERSON, stats.followers),
             (
-                "All-time contributions",
+                locale.contributions(),
                 icons::REPO_PUSH,
                 stats.contributions,
             ),
-            ("Repository views (past two weeks)", icons::EYE, stats.views),
-            ("Repositories with contributions", icons::REPO, stats.repos),
+            (locale.views(), icons::EYE, stats.views),
+            (locale.repositories(), icons::REPO, stats.repos),
         ];
 
         let (style_sheet, style_class) = turf::style_sheet_values!("styles/overview.scss");
@@ -101,7 +106,7 @@ impl OverviewImage {
             table {
                 thead {
                     tr style="transform: translateX(0)" {
-                        th colspan="2" { (stats.name) "'s GitHub Statistics" }
+                        th colspan="2" { (locale.overview_title(&stats.name)) }
                     }
                 }
                 tbody {
