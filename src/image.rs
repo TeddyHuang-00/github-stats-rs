@@ -1,91 +1,134 @@
 use std::fs;
 
 use anyhow::Result;
+use maud::{Markup, html};
 
-use crate::{color::Color, stat::Statistics};
+use crate::{color::Color, icons, stat::Statistics};
 
 const WORKSPACE_ROOT: &str = env!("CARGO_MANIFEST_DIR");
-const TEMPLATE_DIR: &str = "templates";
 const OUTPUT_DIR: &str = "generated";
 
-pub struct LanguageImage {
-    pub progress: String,
-    pub lang_list: String,
-}
+pub struct LanguageImage(Markup);
 
 impl LanguageImage {
     const FILENAME: &str = "languages.svg";
     const ANIMATION_DELAY_MS: u64 = 100;
 
     pub fn new(color: &Color, stats: &Statistics) -> Self {
-        let progress = stats.langs.iter().map(|(lang, percent) | {
-            let color = color.get_color(lang);
-            format!(
-                r#"<span style="background-color: {color}; width: {percent:.3}%;" class="progress-item"></span>"#,
-            )
-        }).collect::<Vec<_>>().join("\n");
-        let lang_list = stats
-            .langs
-            .iter()
-            .enumerate()
-            .map(|(i, (lang, percent))| {
-                let color = color.get_color(lang);
-                let delay = i as u64 * Self::ANIMATION_DELAY_MS;
-                format!(
-                    r#"<li style="animation-delay: {delay}ms;">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="octicon" style="fill:{color};"
-                    viewBox="0 0 16 16" version="1.1" width="16" height="16"><path
-                    fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"></path></svg>
-                    <span class="lang">{lang}</span>
-                    <span class="percent">{percent:.2}%</span>
-                    </li>"#
-                )
-            })
-            .collect::<Vec<_>>()
-            .join("\n");
-        Self {
-            progress,
-            lang_list,
-        }
+        let (style_sheet, class_name) = turf::style_sheet_values!("styles/languages.scss");
+
+        let progress = html! {
+            @for (lang, percent) in &stats.langs {
+                @let color = color.get_color(lang);
+                span
+                    .(class_name.progress_item)
+                    style={ "background-color:" (color) ";width:" (percent) "%" } {}
+            }
+        };
+        let lang_list = html! {
+            ul {
+                @for (i, (lang, percent)) in stats.langs.iter().enumerate() {
+                    @let color = color.get_color(lang);
+                    @let delay = i as u64 * Self::ANIMATION_DELAY_MS;
+                    @let style = format!("fill:{color}");
+                    li style={ "animation-delay:" (delay) "ms" } {
+                        ({
+                            icons::DOT
+                                .with_style(style)
+                                .with_class(class_name.octicon)
+                                .finalize()
+                        })
+                        span.(class_name.lang) { (lang) }
+                        span.(class_name.percent) { (format!("{:.2}%", percent)) }
+                    }
+                }
+            }
+        };
+        let svg = html! {
+            svg #gh-dark-mode-only xmlns="http://www.w3.org/2000/svg" width="360" height="210" {
+                style { (style_sheet) }
+                g {
+                    rect #background x="5" y="5" {}
+                    g {
+                        foreignObject x="21" y="17" width="318" height="176" {
+                            .(class_name.ellipsis) xmlns="http://www.w3.org/1999/xhtml" {
+                                h2 { "Languages Used (By File Size)" }
+                                {
+                                    span.(class_name.progress) { (progress) }
+                                }
+                                (lang_list)
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        Self(svg)
     }
 
-    pub fn save(&self) -> Result<()> {
-        let template_path = format!("{WORKSPACE_ROOT}/{TEMPLATE_DIR}/{}", Self::FILENAME);
+    pub fn save(self) -> Result<()> {
         let output_dir = format!("{WORKSPACE_ROOT}/{OUTPUT_DIR}");
         let output_path = format!("{output_dir}/{}", Self::FILENAME);
         fs::create_dir_all(&output_dir)?;
-        let template = fs::read_to_string(&template_path)?;
-        let output = template
-            .replace("{{ progress }}", &self.progress)
-            .replace("{{ lang_list }}", &self.lang_list);
-        fs::write(&output_path, output)?;
+        fs::write(&output_path, self.0.into_string())?;
         Ok(())
     }
 }
 
-pub struct OverviewImage {
-    pub name: String,
-    pub stars: u64,
-    pub forks: u64,
-    pub contributions: u64,
-    pub followers: u64,
-    pub views: u64,
-    pub repos: u64,
-}
+pub struct OverviewImage(Markup);
 
 impl OverviewImage {
     const FILENAME: &str = "overview.svg";
+    const ANIMATION_DELAY_MS: u64 = 100;
 
     pub fn new(stats: &Statistics) -> Self {
-        Self {
-            name: stats.name.clone(),
-            stars: stats.stars,
-            forks: stats.forks,
-            contributions: stats.contributions,
-            followers: stats.followers,
-            views: stats.views,
-            repos: stats.repos,
-        }
+        let entries = [
+            ("Stars", icons::STAR, stats.stars),
+            ("Forks", icons::REPO_FORKED, stats.forks),
+            ("Followers", icons::PERSON, stats.followers),
+            (
+                "All-time contributions",
+                icons::REPO_PUSH,
+                stats.contributions,
+            ),
+            ("Repository views (past two weeks)", icons::EYE, stats.views),
+            ("Repositories with contributions", icons::REPO, stats.repos),
+        ];
+
+        let (style_sheet, style_class) = turf::style_sheet_values!("styles/overview.scss");
+        let table = html! {
+            table {
+                thead {
+                    tr style="transform: translateX(0)" {
+                        th colspan="2" { (stats.name) "'s GitHub Statistics" }
+                    }
+                }
+                tbody {
+                    @for (i, (label, icon, value)) in entries.into_iter().enumerate() {
+                        @let delay = i as u64 * Self::ANIMATION_DELAY_MS;
+                        tr style={ "animation-delay:" (delay) "ms" } {
+                            td { (icon.with_class(style_class.octicon).finalize()) (label) }
+                            td { (Self::fmt_number(value)) }
+                        }
+                    }
+                }
+            }
+        };
+        let svg = html! {
+            svg #gh-dark-mode-only xmlns="http://www.w3.org/2000/svg" width="360" height="210" {
+                style { (style_sheet) }
+                g {
+                    rect #background x="5" y="5" {}
+                    g {
+                        foreignObject x="21" y="21" width="318" height="168" {
+                            div xmlns="http://www.w3.org/1999/xhtml" { (table) }
+                        }
+                    }
+                }
+            }
+        };
+        Self(svg)
     }
 
     #[allow(clippy::cast_precision_loss)]
@@ -99,21 +142,11 @@ impl OverviewImage {
         }
     }
 
-    pub fn save(&self) -> Result<()> {
-        let template_path = format!("{WORKSPACE_ROOT}/{TEMPLATE_DIR}/{}", Self::FILENAME);
+    pub fn save(self) -> Result<()> {
         let output_dir = format!("{WORKSPACE_ROOT}/{OUTPUT_DIR}");
         let output_path = format!("{output_dir}/{}", Self::FILENAME);
         fs::create_dir_all(&output_dir)?;
-        let template = fs::read_to_string(&template_path)?;
-        let output = template
-            .replace("{{ name }}", &self.name)
-            .replace("{{ stars }}", &Self::fmt_number(self.stars))
-            .replace("{{ forks }}", &Self::fmt_number(self.forks))
-            .replace("{{ contributions }}", &Self::fmt_number(self.contributions))
-            .replace("{{ followers }}", &Self::fmt_number(self.followers))
-            .replace("{{ views }}", &Self::fmt_number(self.views))
-            .replace("{{ repos }}", &Self::fmt_number(self.repos));
-        fs::write(&output_path, output)?;
+        fs::write(&output_path, self.0.into_string())?;
         Ok(())
     }
 }

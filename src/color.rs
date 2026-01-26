@@ -4,7 +4,7 @@ use anyhow::Result;
 
 use crate::env::Config;
 
-pub struct Color(HashMap<String, String>);
+pub struct Color(pub HashMap<String, String>);
 
 impl Color {
     pub async fn fetch(config: &Config) -> Result<Self> {

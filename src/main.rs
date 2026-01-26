@@ -1,5 +1,6 @@
 mod color;
 mod env;
+mod icons;
 mod image;
 mod stat;
 
