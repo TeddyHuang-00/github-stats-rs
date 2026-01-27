@@ -18,12 +18,25 @@ pub struct LanguageImage(Markup);
 impl LanguageImage {
     const FILENAME: &str = "languages.svg";
     const ANIMATION_DELAY_MS: u64 = 100;
+    /// Minimum percentage to display a language in progress bar
+    const MIN_BAR_PERCENTAGE: f64 = 0.5;
+    /// Maximum number of languages to display in progress items
+    const MAX_PROGRESS_ITEMS: usize = 20;
 
     pub fn new(locale: SupportedLanguage, color: &Color, stats: &Statistics) -> Self {
         let (style_sheet, class_name) = turf::style_sheet_values!("styles/languages.scss");
+        let progress_bar_items = stats
+            .langs
+            .iter()
+            .take_while(|(_, p)| *p >= Self::MIN_BAR_PERCENTAGE);
+        let lang_list_items = stats
+            .langs
+            .iter()
+            .take(Self::MAX_PROGRESS_ITEMS)
+            .enumerate();
 
         let progress = html! {
-            @for (lang, percent) in &stats.langs {
+            @for (lang, percent) in progress_bar_items {
                 @let color = color.get_color(lang);
                 span
                     .(class_name.progress_item)
@@ -32,7 +45,7 @@ impl LanguageImage {
         };
         let lang_list = html! {
             ul {
-                @for (i, (lang, percent)) in stats.langs.iter().enumerate() {
+                @for (i, (lang, percent)) in lang_list_items {
                     @let color = color.get_color(lang);
                     @let delay = i as u64 * Self::ANIMATION_DELAY_MS;
                     @let style = format!("fill:{color}");
