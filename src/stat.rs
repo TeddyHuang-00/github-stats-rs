@@ -32,6 +32,7 @@ pub struct Statistics {
 }
 
 impl Statistics {
+    /// Number of decimal digits for language percentage
     const PRECISION_DIGITS: i32 = 4;
 
     #[allow(clippy::too_many_lines)]
@@ -192,20 +193,19 @@ impl Statistics {
                 });
         }
 
+        let mut langs = langs.into_iter().collect::<Vec<_>>();
+        langs.sort_unstable_by_key(|&(_, size)| std::cmp::Reverse(size));
         #[allow(clippy::cast_precision_loss)]
-        let total: f64 = langs.values().map(|&v| v as f64).sum();
+        let total = langs.iter().map(|&(_, size)| size).sum::<u64>() as f64;
         #[allow(clippy::cast_precision_loss)]
-        let mut langs = langs
+        let langs = langs
             .into_iter()
-            .map(|(k, v)| {
-                (
-                    k,
-                    ((v as f64) / total * 10.0_f64.powi(Self::PRECISION_DIGITS + 2)).round()
-                        / 10.0_f64.powi(Self::PRECISION_DIGITS),
-                )
+            .map(|(lang, size)| {
+                let percent = (size as f64 / total) * 100.0;
+                let base = 10.0_f64.powi(Self::PRECISION_DIGITS);
+                (lang, (percent * base).round() / base)
             })
-            .collect::<Vec<_>>();
-        langs.sort_by(|(_, a), (_, b)| f64::total_cmp(a, b).reverse());
+            .collect::<_>();
 
         Ok(Self {
             name: user.name.unwrap_or(user.login),
