@@ -13,7 +13,7 @@ template = "<original_name>"
 anyhow = "1.0.100"
 log = "0.4.29"
 maud = "0.27.0"
-octocrab = "0.51.0"
+octocrab = "0.52.0"
 serde = { version = "1.0.228", features = ["derive"] }
 simple_logger = "5.1.0"
 tokio = { version = "1.49.0", features = ["macros", "rt-multi-thread"] }
